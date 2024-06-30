@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profil</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        /* Styling for the sidebar and main content */
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            display: flex;
+        }
+
+        .sidebar {
+            width: 200px;
+            background-color: #333;
+            color: #fff;
+            padding: 20px;
+            box-sizing: border-box;
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+            transition: transform 0.3s ease;
+            overflow-x: hidden;
+        }
+
+        .sidebar.hidden {
+            transform: translateX(-200px);
+        }
+
+        .sidebar ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar li {
+            margin-bottom: 10px;
+        }
+
+        .sidebar a {
+            color: #fff;
+            text-decoration: none;
+            display: block;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .sidebar a:hover {
+            background-color: #555;
+        }
+
+        main {
+            flex: 1;
+            padding: 20px;
+            transition: margin-left 0.3s ease;
+            margin-left: 200px;
+            overflow-x: hidden;
+        }
+
+        .sidebar.hidden + main {
+            margin-left: 0;
+        }
+
+        /* Style for Toggle Sidebar Icon */
+        .toggle-sidebar {
+            background-color: transparent;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            z-index: 1000;
+            display: block;
+        }
+
+        .toggle-sidebar .bar {
+            width: 25px;
+            height: 3px;
+            background-color: #0f0;
+            margin: 5px;
+            transition: transform 0.3s ease;
+        }
+
+        .toggle-sidebar.active .bar:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+
+        .toggle-sidebar.active .bar:nth-child(2) {
+            opacity: 0;
+        }
+
+        .toggle-sidebar.active .bar:nth-child(3) {
+            transform: rotate(-45deg) translate(7px, -6px);
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                left: 0;
+                transform: translateX(-200px);
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            main {
+                margin-left: 0;
+            }
+
+            .toggle-sidebar {
+                left: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="sidebar" id="sidebar">
+        <ul>
+            <li style="margin-top: 20px;"><a href="index.html" onclick="loadContent('index.html')">Home</a></li>
+            <li><a href="karya-tulis.html" onclick="loadContent('karya-tulis.html')">Karya Tulis</a></li>
+            <li><a href="bahan-ajar.html" onclick="loadContent('bahan-ajar.html')">Bahan Ajar</a></li>
+            <li><a href="bank-soal.html" onclick="loadContent('bank-soal.html')">Bank Soal</a></li>
+            <li><a href="kegiatan-sekolah.html" onclick="loadContent('kegiatan-sekolah.html')">Kegiatan Sekolah</a></li>
+            <li><a href="tutorial.html" onclick="loadContent('tutorial.html')">Tutorial</a></li>
+        </ul>
+    </div>
+
+    <main id="main-content" class="bg-gray-100 min-h-screen">
+        <div class="container mx-auto p-8">
+            <header class="mb-8">
+                <h1 class="text-4xl font-bold text-center text-green-500">Biodata Saya</h1>
+            </header>
+            
+            <section id="profile" class="mb-12">
+                <div class="bg-white shadow-md rounded-lg p-6">
+                    <h2 class="text-2xl font-semibold mb-4">Profil</h2>
+                    <div class="flex items-center">
+                        <img src="profile-pic.jpg" alt="Foto Profil" class="w-32 h-32 rounded-full mr-6">
+                        <div>
+                            <h3 class="text-xl font-bold">METRISNO PUTRA</h3>
+                            <p class="text-gray-700">Fisika</p>
+                            <p class="text-gray-700">Sekolah .......</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="background" class="mb-12">
+                <div class="bg-white shadow-md rounded-lg p-6">
+                    <h2 class="text-2xl font-semibold mb-4">Latar Belakang</h2>
+                    <p class="text-gray-700">
+                        ini opsional pak 
+                    </p>
+                </div>
+            </section>
+
+            <section id="education" class="mb-12">
+                <div class="bg-white shadow-md rounded-lg p-6">
+                    <h2 class="text-2xl font-semibold mb-4">Jenjang Pendidikan</h2>
+                    <ul class="list-disc pl-5 text-gray-700">
+                        <li>
+                            <strong>Sekolah Dasar</strong> - SDN 05 Lubuk Alung,  (tahun 1992-1998.)
+                        </li>
+                        <li class="mt-4">
+                            <strong>Sekolah menengah pertama</strong> - SLTPN 3 LUBUK ALUNG (tahun 1998-2001.)
+                        </li>
+                        <li class="mt-4">
+                            <strong>sekolah menengah atas</strong> - SMAN 1 LUBUK ALUNG (tahun 2001-2004)
+                        </li>
+                        <li class="mt-4">
+                            <strong>Sarjana </strong> - STKIP YDB LUBUK ALUNG (tahun 2004-2008)
+                        </li>
+                        <li class="mt-4">
+                            <strong>Pasca Sarjana</strong> - UNP 2013-2019 (tahun 2004-2008)
+                        </li>
+                    </ul>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const toggleButton = document.querySelector('.toggle-sidebar');
+            sidebar.classList.toggle('hidden');
+            toggleButton.classList.toggle('active');
+        }
+    </script>
+
+    <!-- Toggle Sidebar Icon -->
+    <div class="toggle-sidebar" onclick="toggleSidebar()">
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+    </div>
+
+</body>
+
+</html>
