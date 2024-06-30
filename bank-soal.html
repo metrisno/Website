@@ -10,13 +10,15 @@
     <script src="https://www.gstatic.com/firebasejs/7.20.0/firebase-firestore.js"></script>
     <script src="https://www.gstatic.com/firebasejs/7.20.0/firebase-storage.js"></script>
     <style>
-        /* Styling for the sidebar and main content */
-        body {
+       /* Styling for the sidebar and main content */
+       body {
             font-family: Arial, sans-serif;
             line-height: 1.6;
             margin: 0;
             padding: 0;
             display: flex;
+            flex-direction: column; /* Make sure body is column layout */
+            min-height: 100vh; /* Ensure full height of viewport */
         }
 
         .sidebar {
@@ -106,20 +108,37 @@
 
         @media (max-width: 768px) {
             .sidebar {
-                left: 0;
-                transform: translateX(-200px);
+                width: 100%;
+                height: auto;
+                position: static;
+                transform: none;
+                background-color: #333;
+                display: block; /* Show navigation on small screens */
             }
 
-            .sidebar.active {
-                transform: translateX(0);
+            .sidebar ul {
+                margin-top: 20px; /* Adjust top margin for first menu item */
+                display: flex;
+                flex-direction: column; /* Stack items vertically */
+            }
+
+            .sidebar li {
+                margin-bottom: 10px;
+                width: 100%; /* Full width for each item */
+            }
+
+            .sidebar a {
+                padding: 10px;
+                text-align: center; /* Center text */
             }
 
             main {
                 margin-left: 0;
+                padding-top: 100px; /* Space for fixed navigation */
             }
 
             .toggle-sidebar {
-                left: 10px;
+                display: none; /* Hide toggle button on small screens */
             }
         }
     </style>
@@ -221,41 +240,47 @@
                 });
             }
 
-            // Function to save question to Firestore with text answer and/or image
-            function saveQuestion(event) {
-                event.preventDefault();
-                const formData = new FormData(bankSoalForm);
-                const question = formData.get('question');
-                const answerText = formData.get('answerText');
-                const answerImage = formData.get('answerImage');
+                function saveQuestion(event) {
+                    event.preventDefault();
+                    const formData = new FormData(bankSoalForm);
+                    const question = formData.get('question');
+                    const answerText = formData.get('answerText');
+                    const answerImage = formData.get('answerImage');
 
-                if (!question) {
-                    console.error("Pertanyaan harus diisi.");
-                    return;
-                }
+                    if (!question) {
+                        console.error("Pertanyaan harus diisi.");
+                        return;
+                    }
 
-                const data = {
-                    question: question,
-                    answerText: answerText
-                };
+                    const data = {
+                        question: question
+                    };
 
-                if (answerImage) {
-                    const storageRef = storage.ref();
-                    const fileRef = storageRef.child(answerImage.name);
-                    fileRef.put(answerImage).then(() => {
-                        fileRef.getDownloadURL().then((url) => {
-                            data.answerImageUrl = url;
-                            saveToFirestore(data);
+                    // Check if answerText is provided
+                    if (answerText) {
+                        data.answerText = answerText;
+                    }
+
+                    // Check if answerImage is provided
+                    if (answerImage) {
+                        const storageRef = storage.ref(); // Root reference, which causes the error
+                        const fileName = `${new Date().getTime()}_${answerImage.name}`; // Generate unique filename
+                        const fileRef = storageRef.child(fileName); // Create child reference with unique filename
+                        fileRef.put(answerImage).then(() => {
+                            fileRef.getDownloadURL().then((url) => {
+                                data.answerImageUrl = url;
+                                saveToFirestore(data);
+                            }).catch((error) => {
+                                console.error("Error getting download URL: ", error);
+                            });
                         }).catch((error) => {
-                            console.error("Error getting download URL: ", error);
+                            console.error("Error uploading file: ", error);
                         });
-                    }).catch((error) => {
-                        console.error("Error uploading file: ", error);
-                    });
-                } else {
-                    saveToFirestore(data);
+                    } else {
+                        saveToFirestore(data);
+                    }
                 }
-            }
+
 
             // Function to save data to Firestore
             function saveToFirestore(data) {
