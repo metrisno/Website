@@ -9,6 +9,7 @@
     <script src="https://www.gstatic.com/firebasejs/7.20.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/7.20.0/firebase-firestore.js"></script>
     <script src="https://www.gstatic.com/firebasejs/7.20.0/firebase-storage.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.20.0/firebase-auth.js"></script>
     <style>
        /* Styling for the sidebar and main content */
        body {
@@ -155,6 +156,27 @@
 </div>
 <main id="main-content" class="bg-gray-100 min-h-screen">
 <body class="bg-gray-100">
+    <div id="loginForm" class="w-1/3 mx-auto bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 hidden">
+        <h2 class="text-xl font-bold mb-4 text-center">Login</h2>
+        <form id="authForm">
+            <div class="mb-4">
+                <label for="email" class="block text-gray-700 text-sm font-bold mb-2">Email</label>
+                <input type="email" id="email" name="email" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+            </div>
+            <div class="mb-6">
+                <label for="password" class="block text-gray-700 text-sm font-bold mb-2">Password</label>
+                <input type="password" id="password" name="password" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" required>
+            </div>
+            <div class="flex items-center justify-between">
+                <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                    Login
+                </button>
+                <button type="button" id="cancelLogin" class="bg-gray-400 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                    Cancel
+                </button>
+            </div>
+        </form>
+    </div>
     <div class="container mx-auto p-4">
         <h1 class="text-2xl font-bold mb-4 text-center">Buat Soal Baru</h1>
         <form id="bankSoalForm" class="space-y-4">
@@ -180,7 +202,9 @@
         <h2 id="bankSoal" class="text-xl font-bold mt-6 mb-4 text-center">Daftar Soal</h2>
         <div id="bankSoalList" class="space-y-4"></div>
     </div>
+    
 </main>
+
 <script>
     function toggleSidebar() {
         const sidebar = document.getElementById('sidebar');
