@@ -9,7 +9,6 @@
     <script src="https://www.gstatic.com/firebasejs/7.20.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/7.20.0/firebase-firestore.js"></script>
     <script src="https://www.gstatic.com/firebasejs/7.20.0/firebase-storage.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/7.20.0/firebase-auth.js"></script>
     <style>
         /* Styling for the sidebar and main content */
         body {
@@ -156,8 +155,6 @@
             <li><a href="bank-soal.html" onclick="loadContent('bank-soal.html')">Bank Soal</a></li>
             <li><a href="kegiatan-sekolah.html" onclick="loadContent('kegiatan-sekolah.html')">Kegiatan Sekolah</a></li>
             <li><a href="tutorial.html" onclick="loadContent('tutorial.html')">Tutorial</a></li>
-            <!-- Login button -->
-            <li><button onclick="login()">Login</button></li>
         </ul>
     </div>
     <!-- Main content -->
@@ -188,29 +185,6 @@
             <h2 id="karyaTulis" class="text-xl font-bold mt-6 mb-4 text-center">Daftar Karya Tulis</h2>
             <div id="karyaTulisList" class="space-y-4"></div>
         </div>
-
-        <!-- Login Card -->
-        <div id="loginCard" class="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center hidden">
-            <div class="bg-white p-4 rounded-lg shadow-md">
-                <h2 class="text-xl font-semibold mb-4">Login</h2>
-                <form id="loginForm" class="space-y-4">
-                    <div>
-                        <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
-                        <input type="email" id="email" name="email"
-                            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                            required>
-                    </div>
-                    <div>
-                        <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
-                        <input type="password" id="password" name="password"
-                            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                            required>
-                    </div>
-                    <button type="submit"
-                        class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Login</button>
-                </form>
-            </div>
-        </div>
     </main>
 
     <!-- Toggle Sidebar Button -->
@@ -218,150 +192,133 @@
         <div class="bar"></div>
         <div class="bar"></div>
         <div class="bar"></div>
-        </button>
-        <script>
-            // Firebase configuration
-            var firebaseConfig = {
-                apiKey: "AIzaSyDNn7auDzMH8v414agnYuF155MBjShJ_qg",
-                authDomain: "pakmet-2e858.firebaseapp.com",
-                projectId: "pakmet-2e858",
-                storageBucket: "pakmet-2e858.appspot.com",
-                messagingSenderId: "88810199863",
-                appId: "1:88810199863:web:b3704892e23bbeea2b18b2",
-                measurementId: "G-BL6EEGS6TX"
-            };
-            firebase.initializeApp(firebaseConfig);
-            var db = firebase.firestore();
-            var storage = firebase.storage();
-        
-            // Show sidebar
-            function toggleSidebar() {
-                var sidebar = document.getElementById('sidebar');
-                var toggleButton = document.querySelector('.toggle-sidebar');
-                sidebar.classList.toggle('hidden');
-                toggleButton.classList.toggle('active');
-            }
-        
-            // Login functionality
-            function login() {
-                var loginCard = document.getElementById('loginCard');
-                loginCard.classList.remove('hidden');
-            }
-        
-            // Handle login form submission
-            document.getElementById('loginForm').addEventListener('submit', function        (event) {
-            event.preventDefault();
-            var email = document.getElementById('email').value;
-            var password = document.getElementById('password').value;
-            firebase.auth().signInWithEmailAndPassword(email, password)
-                .then((userCredential) => {
-                    // Signed in
-                    var user = userCredential.user;
-                    alert('Login successful');
-                    document.getElementById('loginCard').classList.add('hidden');
-                })
-                .catch((error) => {
-                    var errorCode = error.code;
-                    var errorMessage = error.message;
-                    alert('Error: ' + errorMessage);
-                });
-        });
+    </button>
+
+    <script>
+        // Firebase configuration
+        var firebaseConfig = {
+            apiKey: "AIzaSyDNn7auDzMH8v414agnYuF155MBjShJ_qg",
+            authDomain: "pakmet-2e858.firebaseapp.com",
+            projectId: "pakmet-2e858",
+            storageBucket: "pakmet-2e858.appspot.com",
+            messagingSenderId: "88810199863",
+            appId: "1:88810199863:web:b3704892e23bbeea2b18b2",
+            measurementId: "G-BL6EEGS6TX"
+        };
+        firebase.initializeApp(firebaseConfig);
+        var db = firebase.firestore();
+        var storage = firebase.storage();
+
+        // Show sidebar
+        function toggleSidebar() {
+            var sidebar = document.getElementById('sidebar');
+            var toggleButton = document.querySelector('.toggle-sidebar');
+            sidebar.classList.toggle('hidden');
+            toggleButton.classList.toggle('active');
+        }
 
         // Handle form submission for karya tulis
         document.getElementById('karyaTulisForm').addEventListener('submit', function (event) {
-            event.preventDefault();
-            var title = document.getElementById('title').value;
-            var content = document.getElementById('content').value;
-            var fileInput = document.getElementById('file');
-            var file = fileInput.files[0];
-            var fileName = file ? file.name : null;
+    event.preventDefault();
 
-            // Add data to Firestore
-            db.collection("karyaTulis").add({
-                title: title,
-                content: content,
-                fileName: fileName,
-                createdAt: firebase.firestore.FieldValue.serverTimestamp()
-            }).then((docRef) => {
-                if (file) {
-                    var storageRef = storage.ref('karyaTulisFiles/' + docRef.id + '/' + fileName);
-                    storageRef.put(file).then(() => {
-                        alert('Karya tulis uploaded successfully');
-                        loadKaryaTulis();
-                    }).catch((error) => {
-                        alert('File upload error: ' + error.message);
-                    });
-                } else {
-                    alert('Karya tulis uploaded successfully');
-                    loadKaryaTulis();
-                }
-            }).catch((error) => {
-                alert('Error: ' + error.message);
-            });
-        });
+    // Prompt for confirmation with code input
+    var confirmationCode = prompt('Masukkan kode konfirmasi:');
+    if (confirmationCode === '1234') { // Ganti 'kodeAnda' dengan kode yang Anda tetapkan
+        var title = document.getElementById('title').value;
+        var content = document.getElementById('content').value;
+        var fileInput = document.getElementById('file');
+        var file = fileInput.files[0];
+        var fileName = file ? file.name : null;
 
-        // Load and display karya tulis from Firestore
-        function loadKaryaTulis() {
-            var karyaTulisList = document.getElementById('karyaTulisList');
-            karyaTulisList.innerHTML = '';
-            db.collection("karyaTulis").orderBy("createdAt", "desc").get().then((querySnapshot) => {
-                querySnapshot.forEach((doc) => {
-                    var data = doc.data();
-                    var item = document.createElement('div');
-                    item.className = 'p-4 bg-white rounded-md shadow-md';
-                    item.innerHTML = `
-                        <h3 class="text-lg font-semibold">${data.title}</h3>
-                        <p>${data.content}</p>
-                        ${data.fileName ? `<a href="#" class="text-blue-500 underline" onclick="downloadFile('${doc.id}', '${data.fileName}')">Download ${data.fileName}</a>` : ''}
-                        <button class="bg-red-500 text-white py-1 px-2 rounded mt-2" onclick="deleteKaryaTulis('${doc.id}', '${data.fileName}')">Hapus</button>
-                    `;
-
-                    karyaTulisList.appendChild(item);
-                });
-            });
-        }
-
-        // Download file
-        function downloadFile(docId, fileName) {
-            var storageRef = storage.ref('karyaTulisFiles/' + docId + '/' + fileName);
-            storageRef.getDownloadURL().then((url) => {
-                var a = document.createElement('a');
-                a.href = url;
-                a.download = fileName;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-            }).catch((error) => {
-                alert('Error downloading file: ' + error.message);
-            });
-        }
-
-        // Load initial karya tulis
-        window.onload = function () {
-            loadKaryaTulis();
-        }
-        function deleteKaryaTulis(docId, fileName) {
-    if (confirm('Apakah Anda yakin ingin menghapus karya tulis ini?')) {
-        db.collection("karyaTulis").doc(docId).delete().then(() => {
-            if (fileName) {
-                var storageRef = storage.ref('karyaTulisFiles/' + docId + '/' + fileName);
-                storageRef.delete().then(() => {
-                    alert('Karya tulis dan file berhasil dihapus');
-                    loadKaryaTulis();
-                }).catch((error) => {
-                    alert('Error deleting file: ' + error.message);
-                });
-            } else {
-                alert('Karya tulis berhasil dihapus');
-                loadKaryaTulis();
+        // Simpan ke Firebase Firestore
+        db.collection('karya-tulis').add({
+            title: title,
+            content: content,
+            fileName: fileName
+        }).then(function (docRef) {
+            if (file) {
+                // Upload file to Firebase Storage
+                var storageRef = storage.ref('files/' + docRef.id + '/' + fileName);
+                var uploadTask = storageRef.put(file);
+                uploadTask.on('state_changed',
+                    function (snapshot) {
+                        // Progress
+                    },
+                    function (error) {
+                        console.error('Upload error:', error);
+                    },
+                    function () {
+                        // Upload success
+                        console.log('Upload success');
+                    }
+                );
             }
-        }).catch((error) => {
-            alert('Error deleting document: ' + error.message);
+            // Clear form
+            document.getElementById('karyaTulisForm').reset();
+            // Refresh list
+            showKaryaTulis();
+        }).catch(function (error) {
+            console.error('Error adding document: ', error);
         });
+    } else {
+        alert('Kode konfirmasi salah. Silakan coba lagi.');
+    }
+});
+
+        // Show existing karya tulis
+        function showKaryaTulis() {
+            db.collection('karya-tulis').get().then(function (querySnapshot) {
+                var karyaTulisList = document.getElementById('karyaTulisList');
+                karyaTulisList.innerHTML = '';
+                querySnapshot.forEach(function (doc) {
+                    var data = doc.data();
+                    var karyaTulisItem = document.createElement('div');
+                    karyaTulisItem.innerHTML = `
+                        <div class="border rounded-md p-4">
+                            <h3 class="text-lg font-bold">${data.title}</h3>
+                            <p>${data.content}</p>
+                            <p>File: ${data.fileName ? data.fileName : 'N/A'}</p>
+                            <button class="bg-red-500 text-white px-3 py-1 rounded-md mt-2"
+                                onclick="deleteKaryaTulis('${doc.id}', '${data.fileName}')">Hapus</button>
+                        </div>
+                    `;
+                    karyaTulisList.appendChild(karyaTulisItem);
+                });
+            }).catch(function (error) {
+                console.error('Error getting documents: ', error);
+            });
+        }
+
+        // Delete karya tulis
+        function deleteKaryaTulis(docId, fileName) {
+    // Prompt for confirmation with code input
+    var confirmationCode = prompt('Masukkan kode konfirmasi:');
+    if (confirmationCode === '1234') { // Ganti 'kodeAnda' dengan kode yang Anda tetapkan
+        // Delete document from Firestore
+        db.collection('karya-tulis').doc(docId).delete().then(function () {
+            console.log('Document successfully deleted');
+            // Delete file from Storage if exists
+            if (fileName) {
+                var storageRef = storage.ref('files/' + docId + '/' + fileName);
+                storageRef.delete().then(function () {
+                    console.log('File successfully deleted');
+                }).catch(function (error) {
+                    console.error('Error deleting file: ', error);
+                });
+            }
+            // Refresh list
+            showKaryaTulis();
+        }).catch(function (error) {
+            console.error('Error deleting document: ', error);
+        });
+    } else {
+        alert('Kode konfirmasi salah. Silakan coba lagi.');
     }
 }
 
+        // Initial load of karya tulis
+        showKaryaTulis();
     </script>
 </body>
 
-                        </html>
+    </html>
