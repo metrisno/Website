@@ -264,46 +264,55 @@
                 });
             }
 
-                function saveQuestion(event) {
-                    event.preventDefault();
-                    const formData = new FormData(bankSoalForm);
-                    const question = formData.get('question');
-                    const answerText = formData.get('answerText');
-                    const answerImage = formData.get('answerImage');
+               // Function to save question to Firestore
+function saveQuestion(event) {
+    event.preventDefault();
 
-                    if (!question) {
-                        console.error("Pertanyaan harus diisi.");
-                        return;
-                    }
+    // Prompt for confirmation with code input
+    var confirmationCode = prompt('Masukkan kode konfirmasi:');
+    if (confirmationCode !== 'sky') { // Ganti 'kodeAnda' dengan kode yang Anda tetapkan
+        alert('Kode konfirmasi salah. Silakan coba lagi.');
+        return;
+    }
 
-                    const data = {
-                        question: question
-                    };
+    const formData = new FormData(bankSoalForm);
+    const question = formData.get('question');
+    const answerText = formData.get('answerText');
+    const answerImage = formData.get('answerImage');
 
-                    // Check if answerText is provided
-                    if (answerText) {
-                        data.answerText = answerText;
-                    }
+    if (!question) {
+        console.error("Pertanyaan harus diisi.");
+        return;
+    }
 
-                    // Check if answerImage is provided
-                    if (answerImage) {
-                        const storageRef = storage.ref(); // Root reference, which causes the error
-                        const fileName = `${new Date().getTime()}_${answerImage.name}`; // Generate unique filename
-                        const fileRef = storageRef.child(fileName); // Create child reference with unique filename
-                        fileRef.put(answerImage).then(() => {
-                            fileRef.getDownloadURL().then((url) => {
-                                data.answerImageUrl = url;
-                                saveToFirestore(data);
-                            }).catch((error) => {
-                                console.error("Error getting download URL: ", error);
-                            });
-                        }).catch((error) => {
-                            console.error("Error uploading file: ", error);
-                        });
-                    } else {
-                        saveToFirestore(data);
-                    }
-                }
+    const data = {
+        question: question
+    };
+
+    // Check if answerText is provided
+    if (answerText) {
+        data.answerText = answerText;
+    }
+
+    // Check if answerImage is provided
+    if (answerImage) {
+        const storageRef = storage.ref();
+        const fileName = `${new Date().getTime()}_${answerImage.name}`;
+        const fileRef = storageRef.child(fileName);
+        fileRef.put(answerImage).then(() => {
+            fileRef.getDownloadURL().then((url) => {
+                data.answerImageUrl = url;
+                saveToFirestore(data);
+            }).catch((error) => {
+                console.error("Error getting download URL: ", error);
+            });
+        }).catch((error) => {
+            console.error("Error uploading file: ", error);
+        });
+    } else {
+        saveToFirestore(data);
+    }
+}
 
 
             // Function to save data to Firestore
@@ -318,14 +327,20 @@
                     });
             }
 
-            // Function to delete question from Firestore
             function deleteQuestion(id) {
-                db.collection("questions").doc(id).delete().then(() => {
-                    loadQuestions();
-                }).catch((error) => {
-                    console.error("Error removing document: ", error);
-                });
-            }
+    // Prompt for confirmation with code input
+    var confirmationCode = prompt('Masukkan kode konfirmasi:');
+    if (confirmationCode !== 'sky') { // Ganti 'kodeAnda' dengan kode yang Anda tetapkan
+        alert('Kode konfirmasi salah. Silakan coba lagi.');
+        return;
+    }
+
+    db.collection("questions").doc(id).delete().then(() => {
+        loadQuestions();
+    }).catch((error) => {
+        console.error("Error removing document: ", error);
+    });
+}
 
             // Load questions on page load
             loadQuestions();
