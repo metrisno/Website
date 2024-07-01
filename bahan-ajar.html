@@ -9,16 +9,17 @@
     <script src="https://www.gstatic.com/firebasejs/7.20.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/7.20.0/firebase-firestore.js"></script>
     <script src="https://www.gstatic.com/firebasejs/7.20.0/firebase-storage.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.20.0/firebase-auth.js"></script>
     <style>
-       /* Styling for the sidebar and main content */
-       body {
+        /* Styling for the sidebar and main content */
+        body {
             font-family: Arial, sans-serif;
             line-height: 1.6;
             margin: 0;
             padding: 0;
             display: flex;
-            flex-direction: column; /* Make sure body is column layout */
-            min-height: 100vh; /* Ensure full height of viewport */
+            flex-direction: column;
+            min-height: 100vh;
         }
 
         .sidebar {
@@ -113,189 +114,211 @@
                 position: static;
                 transform: none;
                 background-color: #333;
-                display: block; /* Show navigation on small screens */
+                display: block;
             }
 
             .sidebar ul {
-                margin-top: 20px; /* Adjust top margin for first menu item */
+                margin-top: 20px;
                 display: flex;
-                flex-direction: column; /* Stack items vertically */
+                flex-direction: column;
             }
 
             .sidebar li {
                 margin-bottom: 10px;
-                width: 100%; /* Full width for each item */
+                width: 100%;
             }
 
             .sidebar a {
                 padding: 10px;
-                text-align: center; /* Center text */
+                text-align: center;
             }
 
             main {
                 margin-left: 0;
-                padding-top: 100px; /* Space for fixed navigation */
+                padding-top: 100px;
             }
 
             .toggle-sidebar {
-                display: none; /* Hide toggle button on small screens */
+                display: none;
             }
         }
     </style>
 </head>
-<div class="sidebar" id="sidebar">
-    <ul>
-        <li style="margin-top: 20px;"><a href="index.html" onclick="loadContent('index.html')">Home</a></li>
-        <li><a href="karya-tulis.html" onclick="loadContent('karya-tulis.html')">Karya Tulis</a></li>
-        <li><a href="bahan-ajar.html" onclick="loadContent('bahan-ajar.html')">Bahan Ajar</a></li>
-        <li><a href="bank-soal.html" onclick="loadContent('bank-soal.html')">Bank Soal</a></li>
-        <li><a href="kegiatan-sekolah.html" onclick="loadContent('kegiatan-sekolah.html')">Kegiatan Sekolah</a></li>
-        <li><a href="tutorial.html" onclick="loadContent('tutorial.html')">Tutorial</a></li>
-    </ul>
-</div>
-<main id="main-content" class="bg-gray-100 min-h-screen">
-<body class="bg-gray-100">
-    <div class="container mx-auto p-4">
-        <h1 class="text-2xl font-bold mb-4 text-center">Buat Bahan Ajar</h1>
-        <form id="bahanAjarForm" class="space-y-4">
-            <div>
-                <label for="title" class="block text-sm font-medium text-gray-700">Judul</label>
-                <input type="text" id="title" name="title"
-                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                    required>
-            </div>
-            <div>
-                <label for="file" class="block text-sm font-medium text-gray-700">Upload File</label>
-                <input type="file" id="file" name="file" accept=".pdf, .doc, .docx, .txt, .ppt, .xls, .xlsx, .pptx, .jpg, .jpeg, .png"
-                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-            </div>
-            <button type="submit"
-                class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Simpan</button>
-        </form>
-        <h2 id="bahanAjar" class="text-xl font-bold mt-6 mb-4 text-center">Daftar Bahan Ajar</h2>
-        <div id="bahanAjarList" class="space-y-4"></div>
+
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <ul>
+            <!-- Menu items -->
+            <li style="margin-top: 20px;"><a href="index.html" onclick="loadContent('index.html')">Home</a></li>
+            <li><a href="karya-tulis.html" onclick="loadContent('karya-tulis.html')">Karya Tulis</a></li>
+            <li><a href="bahan-ajar.html" onclick="loadContent('bahan-ajar.html')">Bahan Ajar</a></li>
+            <li><a href="bank-soal.html" onclick="loadContent('bank-soal.html')">Bank Soal</a></li>
+            <li><a href="kegiatan-sekolah.html" onclick="loadContent('kegiatan-sekolah.html')">Kegiatan Sekolah</a></li>
+            <li><a href="tutorial.html" onclick="loadContent('tutorial.html')">Tutorial</a></li>
+        </ul>
     </div>
-</main>
-<script>
-    function toggleSidebar() {
-        const sidebar = document.getElementById('sidebar');
-        const toggleButton = document.querySelector('.toggle-sidebar');
-        sidebar.classList.toggle('hidden');
-        toggleButton.classList.toggle('active');
-    }
-</script>
+    <!-- Main content -->
+    <main id="main-content" class="bg-gray-100 min-h-screen">
+        <div class="container mx-auto p-4">
+            <h1 class="text-2xl font-bold mb-4 text-center">Buat Bahan Ajar</h1>
+            <form id="bahanAjarForm" class="space-y-4">
+                <div>
+                    <label for="title" class="block text-sm font-medium text-gray-700">Judul</label>
+                    <input type="text" id="title" name="title"
+                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                        required>
+                </div>
+                <div>
+                    <label for="file" class="block text-sm font-medium text-gray-700">Upload File</label>
+                    <input type="file" id="file" name="file"
+                        accept=".pdf, .doc, .docx, .txt, .ppt, .xls, .xlsx, .pptx, .jpg, .jpeg, .png"
+                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                </div>
+                <!-- Tambahkan kondisi untuk menampilkan form login -->
+                <button type="button"
+                    class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                    onclick="toggleLogin()">Simpan</button>
+            </form>
+            <div id="loginFormContainer"></div> <!-- Container untuk menampilkan form login -->
+            <h2 id="bahanAjar" class="text-xl font-bold mt-6 mb-4 text-center">Daftar Bahan Ajar</h2>
+            <div id="bahanAjarList" class="space-y-4"></div>
+        </div>
+    </main>
 
-<!-- Toggle Sidebar Icon -->
-<div class="toggle-sidebar" onclick="toggleSidebar()">
-    <div class="bar"></div>
-    <div class="bar"></div>
-    <div class="bar"></div>
-</div>
     <script>
-        // Your web app's Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyDNn7auDzMH8v414agnYuF155MBjShJ_qg",
-            authDomain: "pakmet-2e858.firebaseapp.com",
-            projectId: "pakmet-2e858",
-            storageBucket: "pakmet-2e858.appspot.com",
-            messagingSenderId: "88810199863",
-            appId: "1:88810199863:web:b3704892e23bbeea2b18b2",
-            measurementId: "G-BL6EEGS6TX"
-        };
 
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-        const storage = firebase.storage();
+        // Firebase configuration
+        var firebaseConfig = {
+                apiKey: "AIzaSyDNn7auDzMH8v414agnYuF155MBjShJ_qg",
+                authDomain: "pakmet-2e858.firebaseapp.com",
+                projectId: "pakmet-2e858",
+                storageBucket: "pakmet-2e858.appspot.com",
+                messagingSenderId: "88810199863",
+                appId: "1:88810199863:web:b3704892e23bbeea2b18b2",
+                measurementId: "G-BL6EEGS6TX"
+            };
+            firebase.initializeApp(firebaseConfig);
+            var db = firebase.firestore();
+            var storage = firebase.storage(); 
+            
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const toggleButton = document.querySelector('.toggle-sidebar');
+            sidebar.classList.toggle('hidden');
+            toggleButton.classList.toggle('active');
+        }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            const bahanAjarForm = document.getElementById('bahanAjarForm');
-            const bahanAjarList = document.getElementById('bahanAjarList');
-
-            // Function to load saved teaching materials from Firestore
-function loadMaterials() {
-    db.collection("teachingMaterials").get().then((querySnapshot) => {
-        bahanAjarList.innerHTML = '';
-        querySnapshot.forEach((doc) => {
-            const material = doc.data();
-            const materialElement = document.createElement('div');
-            materialElement.className = 'p-4 bg-gray-200 rounded-md';
-            materialElement.innerHTML =
-                `<h3 class="text-lg font-bold">${material.title}</h3>
-                <p>${material.content}</p>
-                ${material.fileUrl ? `<a href="${material.fileUrl}" class="block text-blue-600 hover:underline mt-2" target="_blank">Download File</a>` : ''}
-                <button data-id="${doc.id}" class="mt-2 bg-red-500 text-white py-1 px-2 rounded-md deleteBtn">Hapus</button>`;
-            bahanAjarList.appendChild(materialElement);
-
-            // Add delete event listeners
-            materialElement.querySelector('.deleteBtn').addEventListener('click', () => {
-                deleteMaterial(doc.id);
-            });
-        });
-    });
-}
-
-
-            // Function to save teaching material and upload file to Firestore
-            function saveMaterial(event) {
-                event.preventDefault();
-                const formData = new FormData(bahanAjarForm);
-                const title = formData.get('title');
-                const file = formData.get('file');
-
-                // Upload file to Firebase Storage if file is selected
-                if (file) {
-                    const storageRef = storage.ref();
-                    const fileRef = storageRef.child(file.name);
-                    fileRef.put(file).then(() => {
-                        // Get download URL of uploaded file
-                        fileRef.getDownloadURL().then((fileUrl) => {
-                            // Save data to Firestore with file URL
-                            db.collection("teachingMaterials").add({
-                                title: title,
-                                fileUrl: fileUrl // Save the download URL
-                            }).then(() => {
-                                loadMaterials();
-                                bahanAjarForm.reset();
-                            }).catch((error) => {
-                                console.error("Error adding document: ", error);
-                            });
-                        }).catch((error) => {
-                            console.error("Error getting download URL: ", error);
-                        });
-                    }).catch((error) => {
-                        console.error("Error uploading file: ", error);
-                    });
-                } else {
-                    console.error("No file selected.");
-                }
-            }
-
-            // Function to delete teaching material from Firestore
-            function deleteMaterial(id, fileUrl) {
-                // Delete file from Storage if fileUrl exists
-                if (fileUrl) {
-                    const storageRef = storage.refFromURL(fileUrl);
-                    storageRef.delete().then(() => {
-                        console.log("File deleted successfully from Storage.");
-                    }).catch((error) => {
-                        console.error("Error deleting file from Storage: ", error);
-                    });
-                }
-
-                // Delete document from Firestore
-                db.collection("teachingMaterials").doc(id).delete().then(() => {
-                    loadMaterials();
-                }).catch((error) => {
-                    console.error("Error removing document: ", error);
+        // Function untuk menampilkan atau menyembunyikan form login
+        function toggleLogin() {
+            const loginFormContainer = document.getElementById('loginFormContainer');
+            const isLoggedIn = firebase.auth().currentUser;
+            if (!isLoggedIn) {
+                const loginForm = document.createElement('form');
+                loginForm.id = 'loginForm';
+                loginForm.className = 'space-y-4';
+                loginForm.innerHTML = `
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+                        <input type="email" id="email" name="email"
+                            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                            required>
+                    </div>
+                    <div>
+                        <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+                        <input type="password" id="password" name="password"
+                            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                            required>
+                    </div>
+                    <button type="submit"
+                        class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Login</button>
+                `;
+                loginFormContainer.innerHTML = '';
+                loginFormContainer.appendChild(loginForm);
+                loginForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const email = loginForm.email.value;
+                    const password = loginForm.password.value;
+                    try {
+                        const userCredential = await firebase.auth().signInWithEmailAndPassword(email, password);
+                        console.log('User logged in:', userCredential.user.email);
+                        loginForm.reset();
+                        // Setelah login, lakukan perubahan UI atau redirect sesuai kebutuhan
+                        alert('Login berhasil!');
+                    } catch (error) {
+                        console.error('Login error:', error.message);
+                        alert('Login gagal. Silakan periksa kembali email dan password Anda.');
+                    }
                 });
+            } else {
+                // Jika sudah login, lanjutkan dengan menyimpan data
+                saveData();
             }
+        }
 
-            // Load teaching materials on page load
-            loadMaterials();
-            bahanAjarForm.addEventListener('submit', saveMaterial);
-        });
+        // Function untuk menangani proses penyimpanan data
+        async function saveData() {
+            const title = document.getElementById('title').value;
+            const file = document.getElementById('file').files[0];
+            const fileName = file.name;
+            const fileUrl = await handleFileUpload(file);
+            await db.collection('bahan_ajar').add({
+                title: title,
+                fileName: fileName,
+                fileUrl: fileUrl
+            });
+            document.getElementById('bahanAjarForm').reset();
+            loadBahanAjar();
+        }
+
+        // Function untuk menangani proses upload file
+        async function handleFileUpload(file) {
+            const storageRef = storage.ref();
+            const fileRef = storageRef.child(file.name);
+            await fileRef.put(file);
+            const fileUrl = await fileRef.getDownloadURL();
+            return fileUrl;
+        }
+
+        // Function untuk memuat daftar 'Bahan Ajar' yang sudah ada
+        async function loadBahanAjar() {
+            const querySnapshot = await db.collection('bahan_ajar').get();
+            const bahanAjarList = document.getElementById('bahanAjarList');
+            bahanAjarList.innerHTML = '';
+            querySnapshot.forEach(doc => {
+                const data = doc.data();
+                const bahanAjarItem = document.createElement('div');
+                bahanAjarItem.innerHTML = `
+                    <div class="bg-white overflow-hidden shadow rounded-lg p-4">
+                        <h3 class="text-lg font-bold mb-2">${data.title}</h3>
+                        <a href="${data.fileUrl}" target="_blank" class="text-blue-500">Download</a>
+                        <button class="bg-red-500 text-white py-1 px-2 rounded-md ml-2 hover:bg-red-600"
+                            onclick="deleteBahanAjar('${doc.id}', '${data.fileName}')">Delete</button>
+                    </div>
+                `;
+                bahanAjarList.appendChild(bahanAjarItem);
+            });
+        }
+
+        // Function untuk menghapus dokumen 'Bahan Ajar'
+        async function deleteBahanAjar(id, fileName) {
+            await db.collection('bahan_ajar').doc(id).delete();
+            const storageRef = storage.ref();
+            const fileRef = storageRef.child(fileName);
+            await fileRef.delete();
+            loadBahanAjar();
+        }
+
+        // Memuat daftar 'Bahan Ajar' yang sudah ada saat halaman dimuat
+        loadBahanAjar();
     </script>
+    <!-- Toggle Sidebar Icon -->
+    <div class="toggle-sidebar" onclick="toggleSidebar()">
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+    </div>
+
 </body>
 
 </html>
