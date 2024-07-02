@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kegiatan Sekolah</title>
+  <script src="https://www.gstatic.com/firebasejs/7.20.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/7.20.0/firebase-storage.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/7.20.0/firebase-firestore.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Styling for the sidebar and main content */
+    body {
+         font-family: Arial, sans-serif;
+         line-height: 1.6;
+         margin: 0;
+         padding: 0;
+         display: flex;
+         flex-direction: column; /* Make sure body is column layout */
+         min-height: 100vh; /* Ensure full height of viewport */
+     }
+
+     .sidebar {
+         width: 200px;
+         background-color: #333;
+         color: #fff;
+         padding: 20px;
+         box-sizing: border-box;
+         position: fixed;
+         top: 0;
+         left: 0;
+         height: 100%;
+         transition: transform 0.3s ease;
+         overflow-x: hidden;
+     }
+
+     .sidebar.hidden {
+         transform: translateX(-200px);
+     }
+
+     .sidebar ul {
+         list-style-type: none;
+         padding: 0;
+         margin: 0;
+     }
+
+     .sidebar li {
+         margin-bottom: 10px;
+     }
+
+     .sidebar a {
+         color: #fff;
+         text-decoration: none;
+         display: block;
+         padding: 10px;
+         border-radius: 5px;
+     }
+
+     .sidebar a:hover {
+         background-color: #555;
+     }
+
+     main {
+         flex: 1;
+         padding: 20px;
+         transition: margin-left 0.3s ease;
+         margin-left: 200px;
+         overflow-x: hidden;
+     }
+
+     .sidebar.hidden + main {
+         margin-left: 0;
+     }
+
+     /* Style for Toggle Sidebar Icon */
+     .toggle-sidebar {
+         background-color: transparent;
+         border: none;
+         padding: 10px;
+         cursor: pointer;
+         position: fixed;
+         top: 10px;
+         left: 10px;
+         z-index: 1000;
+         display: block;
+     }
+
+     .toggle-sidebar .bar {
+         width: 25px;
+         height: 3px;
+         background-color: #0f0;
+         margin: 5px;
+         transition: transform 0.3s ease;
+     }
+
+     .toggle-sidebar.active .bar:nth-child(1) {
+         transform: rotate(45deg) translate(5px, 5px);
+     }
+
+     .toggle-sidebar.active .bar:nth-child(2) {
+         opacity: 0;
+     }
+
+     .toggle-sidebar.active .bar:nth-child(3) {
+         transform: rotate(-45deg) translate(7px, -6px);
+     }
+
+     @media (max-width: 768px) {
+         .sidebar {
+             width: 100%;
+             height: auto;
+             position: static;
+             transform: none;
+             background-color: #333;
+             display: block; /* Show navigation on small screens */
+         }
+
+         .sidebar ul {
+             margin-top: 20px; /* Adjust top margin for first menu item */
+             display: flex;
+             flex-direction: column; /* Stack items vertically */
+         }
+
+         .sidebar li {
+             margin-bottom: 10px;
+             width: 100%; /* Full width for each item */
+         }
+
+         .sidebar a {
+             padding: 10px;
+             text-align: center; /* Center text */
+         }
+
+         main {
+             margin-left: 0;
+             padding-top: 100px; /* Space for fixed navigation */
+         }
+
+         .toggle-sidebar {
+             display: none; /* Hide toggle button on small screens */
+         }
+     }
+ </style>
+  <style>
+    .hidden { display: none; }
+    .flex { display: flex; }
+    .fixed { position: fixed; }
+    .inset-0 { top: 0; right: 0; bottom: 0; left: 0; }
+    .min-h-screen { min-height: 100vh; }
+    .z-10 { z-index: 10; }
+    .overflow-y-auto { overflow-y: auto; }
+    .items-center { align-items: center; }
+    .justify-center { justify-content: center; }
+    .max-w-sm { max-width: 24rem; }
+    .mx-auto { margin-left: auto; margin-right: auto; }
+  </style>
+</head>
+<div class="sidebar" id="sidebar">
+  <ul>
+      <li style="margin-top: 20px;"><a href="home.html" onclick="loadContent('home.html')">Home</a></li>
+      <li><a href="karya-tulis.html" onclick="loadContent('karya-tulis.html')">Karya Tulis</a></li>
+      <li><a href="bahan-ajar.html" onclick="loadContent('bahan-ajar.html')">Bahan Ajar</a></li>
+      <li><a href="bank-soal.html" onclick="loadContent('bank-soal.html')">Bank Soal</a></li>
+      <li><a href="kegiatan-sekolah.html" onclick="loadContent('kegiatan-sekolah.html')">Kegiatan Sekolah</a></li>
+      <li><a href="tutorial.html" onclick="loadContent('tutorial.html')">Tutorial</a></li>
+  </ul>
+</div>
+<main id="main-content" class="bg-gray-100 min-h-screen">
+<body class="bg-gray-100">
+  <div class="container mx-auto py-8">
+    <h2 class="text-3xl font-bold mb-4 text-center text-blue-600">Kegiatan Sekolah</h2>
+    <div class="bg-white p-6 rounded-lg shadow-lg">
+      <form id="upload-form">
+        <div class="mb-4">
+          <label class="block text-gray-700 text-sm font-bold mb-2" for="photo">Foto Kegiatan:</label>
+          <input type="file" id="photo" accept="image/*" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        </div>
+        <div class="mb-4">
+          <label class="block text-gray-700 text-sm font-bold mb-2" for="description">Keterangan:</label>
+          <textarea id="description" rows="3" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"></textarea>
+        </div>
+        <div class="flex items-center justify-between">
+          <button type="button" onclick="showUploadPrompt()" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition duration-200 ease-in-out">Unggah</button>
+        </div>
+      </form>
+    </div>
+    <div id="gallery" class="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+  </div>
+
+  <!-- Modal -->
+  <div id="code-modal" class="fixed z-10 inset-0 overflow-y-auto hidden">
+    <div class="flex items-center justify-center min-h-screen px-4">
+      <div class="bg-white p-6 rounded-lg shadow-lg max-w-sm mx-auto">
+        <h3 class="text-xl mb-4">Masukkan Kode</h3>
+        <input type="password" id="auth-code" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-4" placeholder="Kode">
+        <button onclick="validateCode()" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition duration-200 ease-in-out">Submit</button>
+      </div>
+    </div>
+  </div>
+</main>
+<script>
+  function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const toggleButton = document.querySelector('.toggle-sidebar');
+      sidebar.classList.toggle('hidden');
+      toggleButton.classList.toggle('active');
+  }
+</script>
+
+<!-- Toggle Sidebar Icon -->
+<div class="toggle-sidebar" onclick="toggleSidebar()">
+  <div class="bar"></div>
+  <div class="bar"></div>
+  <div class="bar"></div>
+</div>
+  <script>
+    // Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyDNn7auDzMH8v414agnYuF155MBjShJ_qg",
+      authDomain: "pakmet-2e858.firebaseapp.com",
+      databaseURL: "https://pakmet-2e858-default-rtdb.firebaseio.com",
+      projectId: "pakmet-2e858",
+      storageBucket: "pakmet-2e858.appspot.com",
+      messagingSenderId: "88810199863",
+      appId: "1:88810199863:web:b3704892e23bbeea2b18b2",
+      measurementId: "G-BL6EEGS6TX"
+    };
+
+    const AUTH_CODE = "1234"; // Ganti dengan kode rahasia Anda
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const storage = firebase.storage();
+    const db = firebase.firestore();
+
+    let currentAction = null;
+
+    function showUploadPrompt() {
+      currentAction = 'upload';
+      document.getElementById('code-modal').classList.remove('hidden');
+    }
+
+    function showDeletePrompt(docId, photoURL) {
+      currentAction = { action: 'delete', docId, photoURL };
+      document.getElementById('code-modal').classList.remove('hidden');
+    }
+
+    function validateCode() {
+      const enteredCode = document.getElementById('auth-code').value;
+      if (enteredCode === AUTH_CODE) {
+        document.getElementById('code-modal').classList.add('hidden');
+        if (currentAction === 'upload') {
+          uploadPhoto();
+        } else if (currentAction.action === 'delete') {
+          deletePhoto(currentAction.docId, currentAction.photoURL);
+        }
+      } else {
+        alert('Kode salah!');
+      }
+    }
+
+    // Upload photo function
+    function uploadPhoto() {
+      const photoInput = document.getElementById('photo');
+      const descriptionInput = document.getElementById('description');
+
+      if (photoInput.files.length === 0) {
+        alert('Please select a photo to upload.');
+        return;
+      }
+
+      const file = photoInput.files[0];
+      const description = descriptionInput.value;
+      const storageRef = storage.ref('kegiatan-sekolah/' + file.name);
+
+      const uploadTask = storageRef.put(file);
+
+      uploadTask.on('state_changed', 
+        (snapshot) => {
+          // Observe state change events such as progress, pause, and resume
+        }, 
+        (error) => {
+          // Handle unsuccessful uploads
+          console.error('Upload failed:', error);
+        }, 
+        () => {
+          // Handle successful uploads
+          uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+            db.collection('kegiatanSekolah').add({
+              photoURL: downloadURL,
+              description: description,
+              timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(() => {
+              alert('Photo uploaded successfully!');
+              photoInput.value = '';
+              descriptionInput.value = '';
+              loadGallery();
+            }).catch((error) => {
+              console.error('Error adding document:', error);
+            });
+          });
+        }
+      );
+    }
+
+    // Delete photo function
+    function deletePhoto(docId, photoURL) {
+      db.collection('kegiatanSekolah').doc(docId).delete().then(() => {
+        const storageRef = storage.refFromURL(photoURL);
+        storageRef.delete().then(() => {
+          alert('Photo deleted successfully!');
+          loadGallery();
+        }).catch((error) => {
+          console.error('Error deleting photo from storage:', error);
+        });
+      }).catch((error) => {
+        console.error('Error deleting document:', error);
+      });
+    }
+
+    // Load gallery function
+    function loadGallery() {
+      const gallery = document.getElementById('gallery');
+      gallery.innerHTML = '';
+
+      db.collection('kegiatanSekolah').orderBy('timestamp', 'desc').get().then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+          const data = doc.data();
+          const docId = doc.id;
+          const photoElement = document.createElement('div');
+          photoElement.classList.add('bg-white', 'p-4', 'rounded-lg', 'shadow-lg', 'relative', 'hover:shadow-2xl', 'transition', 'duration-300', 'ease-in-out');
+          photoElement.innerHTML = `
+            <img src="${data.photoURL}" alt="Photo" class="w-full h-48 object-cover rounded-lg mb-4">
+            <p class="text-gray-700">${data.description}</p>
+            <button onclick="showDeletePrompt('${docId}', '${data.photoURL}')" class="absolute top-2 right-2 text-red-500 hover:text-red-700 transition duration-200 ease-in-out">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-6 h-6">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          `;
+          gallery.appendChild(photoElement);
+        });
+      }).catch((error) => {
+        console.error('Error loading gallery:', error);
+      });
+    }
+
+    // Load gallery on page load
+    window.onload = loadGallery;
+  </script>
+</body>
+</html>
