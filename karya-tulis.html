@@ -219,106 +219,117 @@
 
         // Handle form submission for karya tulis
         document.getElementById('karyaTulisForm').addEventListener('submit', function (event) {
-    event.preventDefault();
+            event.preventDefault();
 
-    // Prompt for confirmation with code input
-    var confirmationCode = prompt('Masukkan kode konfirmasi:');
-    if (confirmationCode === '1234') { // Ganti 'kodeAnda' dengan kode yang Anda tetapkan
-        var title = document.getElementById('title').value;
-        var content = document.getElementById('content').value;
-        var fileInput = document.getElementById('file');
-        var file = fileInput.files[0];
-        var fileName = file ? file.name : null;
+            // Prompt for confirmation with code input
+            var confirmationCode = prompt('Masukkan kode konfirmasi:');
+            if (confirmationCode === '1234') { // Ganti 'kodeAnda' dengan kode yang Anda tetapkan
+                var title = document.getElementById('title').value;
+                var content = document.getElementById('content').value;
+                var fileInput = document.getElementById('file');
+                var file = fileInput.files[0];
+                var fileName = file ? file.name : null;
 
-        // Simpan ke Firebase Firestore
-        db.collection('karya-tulis').add({
-            title: title,
-            content: content,
-            fileName: fileName
-        }).then(function (docRef) {
-            if (file) {
-                // Upload file to Firebase Storage
-                var storageRef = storage.ref('files/' + docRef.id + '/' + fileName);
-                var uploadTask = storageRef.put(file);
-                uploadTask.on('state_changed',
-                    function (snapshot) {
-                        // Progress
-                    },
-                    function (error) {
-                        console.error('Upload error:', error);
-                    },
-                    function () {
-                        // Upload success
-                        console.log('Upload success');
+                // Simpan ke Firebase Firestore
+                db.collection('karya-tulis').add({
+                    title: title,
+                    content: content,
+                    fileName: fileName
+                }).then(function (docRef) {
+                    if (file) {
+                        // Upload file ke Firebase Storage
+                        var storageRef = storage.ref('karya-tulis/' + docRef.id + '/' + file.name);
+                        var uploadTask = storageRef.put(file);
+
+                        uploadTask.on('state_changed', function (snapshot) {
+                            // Progress handler
+                        }, function (error) {
+                            // Error handler
+                            console.error('Upload failed:', error);
+                        }, function () {
+                            // Upload selesai
+                            console.log('File uploaded successfully');
+                            loadKaryaTulis();
+                        });
+                    } else {
+                        loadKaryaTulis();
                     }
-                );
+                }).catch(function (error) {
+                    console.error('Error adding document:', error);
+                });
+            } else {
+                alert('Kode konfirmasi salah. Tindakan dibatalkan.');
             }
-            // Clear form
-            document.getElementById('karyaTulisForm').reset();
-            // Refresh list
-            showKaryaTulis();
-        }).catch(function (error) {
-            console.error('Error adding document: ', error);
         });
-    } else {
-        alert('Kode konfirmasi salah. Silakan coba lagi.');
-    }
-});
 
-        // Show existing karya tulis
-        function showKaryaTulis() {
+        // Load and display karya tulis
+        function loadKaryaTulis() {
             db.collection('karya-tulis').get().then(function (querySnapshot) {
                 var karyaTulisList = document.getElementById('karyaTulisList');
                 karyaTulisList.innerHTML = '';
                 querySnapshot.forEach(function (doc) {
                     var data = doc.data();
-                    var karyaTulisItem = document.createElement('div');
-                    karyaTulisItem.innerHTML = `
-                        <div class="border rounded-md p-4">
-                            <h3 class="text-lg font-bold">${data.title}</h3>
-                            <p>${data.content}</p>
-                            <p>File: ${data.fileName ? data.fileName : 'N/A'}</p>
-                            <button class="bg-red-500 text-white px-3 py-1 rounded-md mt-2"
-                                onclick="deleteKaryaTulis('${doc.id}', '${data.fileName}')">Hapus</button>
-                        </div>
+                    var listItem = document.createElement('div');
+                    listItem.className = 'p-4 bg-white rounded-lg shadow-md';
+                    listItem.innerHTML = `
+                        <h3 class="text-lg font-bold">${data.title}</h3>
+                        <p>${data.content}</p>
+                        ${data.fileName ? `<a href="#" onclick="downloadFile('${doc.id}', '${data.fileName}')" class="text-blue-500 underline">Download File</a>` : ''}
+                        <button onclick="deleteKaryaTulis('${doc.id}', '${data.fileName}')"
+                            class="text-red-500 mt-2">Hapus</button>
                     `;
-                    karyaTulisList.appendChild(karyaTulisItem);
+                    karyaTulisList.appendChild(listItem);
                 });
+            });
+        }
+
+        // Download file
+        function downloadFile(docId, fileName) {
+            var storageRef = storage.ref('karya-tulis/' + docId + '/' + fileName);
+            storageRef.getDownloadURL().then(function (url) {
+                var link = document.createElement('a');
+                link.href = url;
+                link.download = fileName;
+                link.click();
             }).catch(function (error) {
-                console.error('Error getting documents: ', error);
+                console.error('Error getting download URL:', error);
             });
         }
 
         // Delete karya tulis
         function deleteKaryaTulis(docId, fileName) {
-    // Prompt for confirmation with code input
-    var confirmationCode = prompt('Masukkan kode konfirmasi:');
-    if (confirmationCode === '1234') { // Ganti 'kodeAnda' dengan kode yang Anda tetapkan
-        // Delete document from Firestore
-        db.collection('karya-tulis').doc(docId).delete().then(function () {
-            console.log('Document successfully deleted');
-            // Delete file from Storage if exists
-            if (fileName) {
-                var storageRef = storage.ref('files/' + docId + '/' + fileName);
-                storageRef.delete().then(function () {
-                    console.log('File successfully deleted');
+            // Prompt for confirmation with code input
+            var confirmationCode = prompt('Masukkan kode konfirmasi untuk menghapus:');
+            if (confirmationCode === '1234') { // Ganti 'kodeAnda' dengan kode yang Anda tetapkan
+                // Hapus dokumen dari Firestore
+                db.collection('karya-tulis').doc(docId).delete().then(function () {
+                    console.log('Document successfully deleted!');
+                    // Hapus file dari Firebase Storage jika ada
+                    if (fileName) {
+                        var storageRef = storage.ref('karya-tulis/' + docId + '/' + fileName);
+                        storageRef.delete().then(function () {
+                            console.log('File successfully deleted!');
+                            loadKaryaTulis();
+                        }).catch(function (error) {
+                            console.error('Error removing file:', error);
+                            loadKaryaTulis();
+                        });
+                    } else {
+                        loadKaryaTulis();
+                    }
                 }).catch(function (error) {
-                    console.error('Error deleting file: ', error);
+                    console.error('Error removing document:', error);
                 });
+            } else {
+                alert('Kode konfirmasi salah. Tindakan dibatalkan.');
             }
-            // Refresh list
-            showKaryaTulis();
-        }).catch(function (error) {
-            console.error('Error deleting document: ', error);
-        });
-    } else {
-        alert('Kode konfirmasi salah. Silakan coba lagi.');
-    }
-}
+        }
 
-        // Initial load of karya tulis
-        showKaryaTulis();
+        // Load karya tulis when the page loads
+        window.onload = function () {
+            loadKaryaTulis();
+        };
     </script>
 </body>
 
-    </html>
+</html>
